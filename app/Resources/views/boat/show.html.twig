@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Boat</h1>
+
+    <div id="boat" class="wrapper">
+        <div>
+            <div class="row my-2">
+                <div class="col-md-12">
+                    <h1>{{ boat.name }}</h1>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-md-12">
+                    <h3><i class="fas fa-euro-sign px-2"></i> {{ boat.price }}</h3>
+                </div>
+            </div>
+            <div class="row my-2">
+                <div class="col-md-12">
+                    <p class="text-justify">{{ boat.about }}</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-2"><i class="fas fa-users px-2"></i>{{ boat.guests }}</div>
+                <div class="col-md-2"><i class="fas fa-bed px-2"></i>{{ boat.cabins }}</div>
+                <div class="col-md-2"><i class="fas fa-shower px-2"></i>{{ boat.bathrooms }}</div>
+                <div class="col-md-2"><i class="fas fa-arrows-alt-h px-2"></i>{{ boat.length }}m</div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="{{ path('boat_index') }}"> <i class="fas fa-chevron-left"></i> Back to the list</a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ path('boat_edit', { 'id': boat.id }) }}" class="btn btn-warning btn-lg btn-block">Edit</a>
+                </div>
+
+                <div class="col-md-3">
+                    {{ form_start(delete_form) }}
+                        <button class="btn btn-danger btn-lg btn-block" type="submit">Delete Boat</button>
+                    {{ form_end(delete_form) }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

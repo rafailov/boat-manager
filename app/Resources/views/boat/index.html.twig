@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Boats list</h1>
+
+    <table class="table table-hover scope=col">
+        <thead>
+            <tr>
+                <th scope="col">Boat license id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Guests</th>
+                <th scope="col">Length</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for boat in boats %}
+            <tr>
+                <td scope="row"><a href="{{ path('boat_show', { 'id': boat.id }) }}">#{{ boat.boatId }}</a></td>
+                <td>{{ boat.name }}</td>
+                <td><i class="fas fa-euro-sign px-2"></i>{{ boat.price }}</td>
+                <td><i class="fas fa-users px-2"></i>{{ boat.guests }}</td>
+                <td><i class="fas fa-arrows-alt-h px-2"></i>{{ boat.length }}m</td>
+                <td>
+                    <a href="{{ path('boat_show', { 'id': boat.id }) }}"><i class="far fa-newspaper"></i></a>
+                    <a href="{{ path('boat_edit', { 'id': boat.id }) }}" class="ml-4"><i class="fas fa-pencil-alt"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('boat_new') }}"><i class="fas fa-plus"></i> Add a new boat</a>
+{% endblock %}

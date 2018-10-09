@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="row">
+    <div class="offset-md-3 col-md-6">
+        <h2 class="mb-3">Manage your boat</h2>
+        {{dump()  }}
+        {{ form_start(edit_form, { 'attr': {'id': 'edit_form'} }) }}
+            {{ form_widget(edit_form) }}
+        {{ form_end(edit_form) }}
+
+        {{ form_start(delete_form, {'attr': {'id': 'delete_form', 'method': 'DELETE'} }) }}
+        {{ form_end(delete_form) }}
+        <div class="row">
+            <a href="{{ path('boat_index') }}" class="col-md-3 px-2 my-3 ml-3">
+                <i class="fas fa-chevron-left"></i> Back to the list
+            </a>
+            <button id="update-boat" type="submit" class="btn btn-warning btn-lg mx-1 col-md-4" >Update Boat</button>
+            <button id="delete-boat" type="submit" class="btn btn-danger btn-lg mx-1 col-md-4" >Delete Boat</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        const editForm = document.getElementById("edit_form");
+
+        document.getElementById("update-boat").addEventListener("click", function () {
+            editForm.submit();
+        });
+
+        const deleteForm = document.getElementById("delete_form");
+
+        document.getElementById("delete-boat").addEventListener("click", function () {
+            if (window.confirm('You are goint to delete the boat!')) {
+                deleteForm.submit();
+            }
+        });
+    </script>
+{% endblock %}
