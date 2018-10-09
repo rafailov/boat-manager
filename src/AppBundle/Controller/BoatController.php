@@ -6,12 +6,13 @@ use AppBundle\Entity\Boat;
 use AppBundle\Form\BoatType;
 use AppBundle\Repository\BoatRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 /**
  * Boat controller.
@@ -26,19 +27,25 @@ class BoatController extends Controller
     private $boatRepository;
 
     /**
+     * @var Validation
+     */
+    private $validator;
+
+    /**
      * BoatController constructor.
      * @param BoatRepository $boatRepository
+     * @param RecursiveValidator $validator
      */
-    public function __construct(BoatRepository $boatRepository)
+    public function __construct(BoatRepository $boatRepository, RecursiveValidator $validator)
     {
         $this->boatRepository = $boatRepository;
+        $this->validator = $validator;
     }
 
     /**
      * Lists all boat entities.
      *
-     * @Route("/", name="boat_index")
-     * @Method("GET")
+     * @Route("/", name="boat_index", methods={"GET"})
      */
     public function listAction()
     {
@@ -52,8 +59,7 @@ class BoatController extends Controller
     /**
      * Creates a new boat entity.
      *
-     * @Route("/new", name="boat_new_form")
-     * @Method({"GET"})
+     * @Route("/new", name="boat_form_new", methods={"GET"})
      * @return RedirectResponse|Response
      */
     public function createFormAction()
@@ -66,8 +72,7 @@ class BoatController extends Controller
     /**
      * Creates a new boat entity.
      *
-     * @Route("/new", name="boat_new")
-     * @Method({"GET", "POST"})
+     * @Route("/new", name="boat_new", methods={"POST"})
      * @param Request $request
      * @return RedirectResponse|Response
      */
@@ -76,23 +81,15 @@ class BoatController extends Controller
         $form = $this->createForm(BoatType::class);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $boat = $this->boatRepository->create($form->getData());
+        $boat = $this->boatRepository->create($form->getData());
 
-            return $this->redirectToRoute('boat_show', ['id' => $boat->getId()]);
-        }
-
-        return $this->render('boat/new.html.twig', [
-            'boat' => null,
-            'form' => $form->createView()
-        ]);
+        return $this->redirectToRoute('boat_show', ['id' => $boat->getId()]);
     }
 
     /**
      * Finds and displays a boat entity.
      *
-     * @Route("/{id}", name="boat_show")
-     * @Method("GET")
+     * @Route("/{id}", name="boat_show", methods={"GET"})
      * @param Boat $boat
      * @return Response
      */
@@ -107,25 +104,16 @@ class BoatController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing boat entity.
+     * Finds and displays a boat entity.
      *
-     * @Route("/{id}/edit", name="boat_edit")
-     * @Method({"GET", "POST"})
-     * @param Request $request
+     * @Route("/{id}/edit", name="boat_show_form", methods={"GET"})
      * @param Boat $boat
-     * @return RedirectResponse|Response
+     * @return Response
      */
-    public function editAction(Request $request, Boat $boat)
+    public function editFormAction(Boat $boat)
     {
         $deleteForm = $this->createDeleteForm($boat);
         $editForm = $this->createForm(BoatType::class, $boat);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('boat_edit', ['id' => $boat->getId()]);
-        }
 
         return $this->render('boat/edit.html.twig', [
             'boat' => $boat,
@@ -135,10 +123,32 @@ class BoatController extends Controller
     }
 
     /**
+     * Displays a form to edit an existing boat entity.
+     *
+     * @Route("/{id}/edit", name="boat_edit", methods={"POST"})
+     * @param Request $request
+     * @param Boat $boat
+     * @return RedirectResponse|Response
+     */
+    public function editAction(Request $request, Boat $boat)
+    {
+        $editForm = $this->createForm(BoatType::class, $boat);
+        $editForm->handleRequest($request);
+
+        $errors = $this->validator->validate($boat);
+        if (count($errors) > 0) {
+            return $this->redirectToRoute('boat_edit', ['id' => $boat->getId(), 'errors' => $errors]);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->redirectToRoute('boat_show', ['id' => $boat->getId()]);
+    }
+
+    /**
      * Deletes a boat entity.
      *
-     * @Route("/{id}", name="boat_delete")
-     * @Method("DELETE")
+     * @Route("/{id}", name="boat_delete", methods={"DELETE"})
      * @param Request $request
      * @param Boat $boat
      * @return RedirectResponse
@@ -148,9 +158,7 @@ class BoatController extends Controller
         $form = $this->createDeleteForm($boat);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->boatRepository->remove($boat);
-        }
+        $this->boatRepository->remove($boat);
 
         return $this->redirectToRoute('boat_index');
     }

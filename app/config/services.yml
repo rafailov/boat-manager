@@ -27,6 +27,9 @@ services:
         arguments:
             - AppBundle\Entity\Boat
 
+    Symfony\Component\Validator\Validator\RecursiveValidator:
+        factory: 'Symfony\Component\Validator\Validation::createValidator'
+
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     AppBundle\Controller\:

@@ -3,6 +3,8 @@
 namespace AppBundle\Entity;
 use Ramsey\Uuid\UuidInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BoatRepository")
@@ -24,6 +26,8 @@ class Boat
      * @var integer
      *
      * @ORM\Column(type="integer", length=6, unique=true)
+     *
+     * @Assert\NotBlank()
      */
     private $boatId;
 
@@ -31,6 +35,14 @@ class Boat
      * @var string
      *
      * @ORM\Column(type="string", length=100)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 100,
+     *      minMessage = "Your boat name must be at least {{ limit }} characters long",
+     *      maxMessage = "Your boat name cannot be longer than {{ limit }} characters"
+     * )
      */
     private $name;
 
@@ -38,6 +50,8 @@ class Boat
      * @var float
      *
      * @ORM\Column(type="decimal", scale=2)
+     *
+     * @Assert\NotBlank()
      */
     private $price;
 
@@ -45,6 +59,8 @@ class Boat
      * @var integer
      *
      * @ORM\Column(type="integer")
+     *
+     * @Assert\NotBlank()
      */
     private $guests;
 
@@ -52,6 +68,8 @@ class Boat
      * @var integer
      *
      * @ORM\Column(type="integer")
+     *
+     * @Assert\NotBlank()
      */
     private $cabins;
 
@@ -59,6 +77,8 @@ class Boat
      * @var integer
      *
      * @ORM\Column(type="integer")
+     *
+     * @Assert\NotBlank()
      */
     private $bathrooms;
 
@@ -66,6 +86,8 @@ class Boat
      * @var float
      *
      * @ORM\Column(type="decimal", scale=2)
+     *
+     * @Assert\NotBlank()
      */
     private $length;
 
@@ -73,8 +95,17 @@ class Boat
      * @var string
      *
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotBlank()
      */
     private $about;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $isActive;
 
     /**
      * Boat constructor.
@@ -105,6 +136,7 @@ class Boat
         $this->bathrooms = $bathrooms;
         $this->length = $length;
         $this->about = $about;
+        $this->isActive = false;
     }
 
     /**
@@ -123,6 +155,10 @@ class Boat
         return $this->boatId;
     }
 
+    /**
+     * @param $boatId
+     * @return void
+     */
     public function setBoatId($boatId): void
     {
         $this->boatId = $boatId;
@@ -136,6 +172,10 @@ class Boat
         return $this->name;
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function setName($name): void
     {
         $this->name = $name;
@@ -149,6 +189,10 @@ class Boat
         return $this->price;
     }
 
+    /**
+     * @param $price
+     * @return void
+     */
     public function setPrice($price): void
     {
         $this->price = $price;
@@ -162,6 +206,10 @@ class Boat
         return $this->guests;
     }
 
+    /**
+     * @param $guests
+     * @return void
+     */
     public function setGuests($guests): void
     {
         $this->guests = $guests;
@@ -175,6 +223,10 @@ class Boat
         return $this->cabins;
     }
 
+    /**
+     * @param $cabins
+     * @return void
+     */
     public function setCabins($cabins): void
     {
         $this->cabins = $cabins;
@@ -188,6 +240,10 @@ class Boat
         return $this->bathrooms;
     }
 
+    /**
+     * @param $bathrooms
+     * @return void
+     */
     public function setBathrooms($bathrooms): void
     {
         $this->bathrooms = $bathrooms;
@@ -201,6 +257,10 @@ class Boat
         return $this->length;
     }
 
+    /**
+     * @param $length
+     * @return void
+     */
     public function setLength($length): void
     {
         $this->length = $length;
@@ -214,8 +274,20 @@ class Boat
         return $this->about;
     }
 
+    /**
+     * @param $about
+     * @return void
+     */
     public function setAbout($about): void
     {
         $this->about = $about;
+    }
+
+    /**
+     * @return void
+     */
+    public function toggleActive(): void
+    {
+        $this->isActive = !$this->isActive;
     }
 }
