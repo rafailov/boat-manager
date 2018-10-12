@@ -30,6 +30,18 @@ class BoatRepository extends EntityRepository
         return $boat;
     }
 
+    public function findActiveBoats()
+    {
+        $query = $this->createQueryBuilder('boat')
+            ->where('boat.isActive = :isActive')
+            ->setParameter('isActive', true)
+            ->getQuery();
+
+        $boat = $query->getResult();
+
+        return $boat;
+    }
+
     /**
      * @param $boat
      */

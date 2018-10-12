@@ -290,4 +290,31 @@ class Boat
     {
         $this->isActive = !$this->isActive;
     }
+
+    /**
+     * @return \boolean
+     */
+    public function isActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id'        => $this->getId(),
+            'boatId'    => $this->getBoatId(),
+            'name'      => $this->getName(),
+            'price'     => $this->getPrice(),
+            'guests'    => $this->getGuests(),
+            'cabins'    => $this->getCabins(),
+            'bathrooms' => $this->getBathrooms(),
+            'length'    => $this->getLength(),
+            'about'     => $this->getAbout(),
+            'is_active' => $this->isActive()
+        ];
+    }
 }

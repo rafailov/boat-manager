@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\RecursiveValidator;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Boat controller.
@@ -34,9 +34,9 @@ class BoatController extends Controller
     /**
      * BoatController constructor.
      * @param BoatRepository $boatRepository
-     * @param RecursiveValidator $validator
+     * @param ValidatorInterface $validator
      */
-    public function __construct(BoatRepository $boatRepository, RecursiveValidator $validator)
+    public function __construct(BoatRepository $boatRepository, ValidatorInterface $validator)
     {
         $this->boatRepository = $boatRepository;
         $this->validator = $validator;
@@ -49,7 +49,7 @@ class BoatController extends Controller
      */
     public function listAction()
     {
-        $boats = $this->boatRepository->findAll();
+        $boats = $this->boatRepository->findActiveBoats();
 
         return $this->render('boat/index.html.twig', [
             'boats' => $boats,
@@ -60,6 +60,7 @@ class BoatController extends Controller
      * Creates a new boat entity.
      *
      * @Route("/new", name="boat_form_new", methods={"GET"})
+     *
      * @return RedirectResponse|Response
      */
     public function createFormAction()
@@ -78,19 +79,17 @@ class BoatController extends Controller
      */
     public function createAction(Request $request)
     {
-        $form = $this->createForm(BoatType::class);
-        $form->handleRequest($request);
-
-        $boat = $this->boatRepository->create($form->getData());
+        $boat = $this->boatRepository->create($request->request->all()['boat']);
 
         return $this->redirectToRoute('boat_show', ['id' => $boat->getId()]);
     }
 
     /**
      * Finds and displays a boat entity.
+     * @param Boat $boat
      *
      * @Route("/{id}", name="boat_show", methods={"GET"})
-     * @param Boat $boat
+     *
      * @return Response
      */
     public function showAction(Boat $boat)
@@ -105,9 +104,10 @@ class BoatController extends Controller
 
     /**
      * Finds and displays a boat entity.
+     * @param Boat $boat
      *
      * @Route("/{id}/edit", name="boat_show_form", methods={"GET"})
-     * @param Boat $boat
+     *
      * @return Response
      */
     public function editFormAction(Boat $boat)
@@ -124,10 +124,11 @@ class BoatController extends Controller
 
     /**
      * Displays a form to edit an existing boat entity.
-     *
-     * @Route("/{id}/edit", name="boat_edit", methods={"POST"})
      * @param Request $request
      * @param Boat $boat
+     *
+     * @Route("/{id}/edit", name="boat_edit", methods={"POST"})
+     *
      * @return RedirectResponse|Response
      */
     public function editAction(Request $request, Boat $boat)
@@ -135,9 +136,16 @@ class BoatController extends Controller
         $editForm = $this->createForm(BoatType::class, $boat);
         $editForm->handleRequest($request);
 
-        $errors = $this->validator->validate($boat);
-        if (count($errors) > 0) {
-            return $this->redirectToRoute('boat_edit', ['id' => $boat->getId(), 'errors' => $errors]);
+        $violations = $this->validator->validate($boat);
+        if (count($violations) > 0) {
+            $deleteForm = $this->createDeleteForm($boat);
+
+            return $this->render('boat/edit.html.twig', [
+                'boat' => $boat,
+                'edit_form' => $editForm->createView(),
+                'delete_form' => $deleteForm->createView(),
+                'violations' => $violations,
+            ]);
         }
 
         $this->getDoctrine()->getManager()->flush();
@@ -147,17 +155,14 @@ class BoatController extends Controller
 
     /**
      * Deletes a boat entity.
+     * @param Boat $boat
      *
      * @Route("/{id}", name="boat_delete", methods={"DELETE"})
-     * @param Request $request
-     * @param Boat $boat
+     *
      * @return RedirectResponse
      */
-    public function deleteAction(Request $request, Boat $boat)
+    public function deleteAction(Boat $boat)
     {
-        $form = $this->createDeleteForm($boat);
-        $form->handleRequest($request);
-
         $this->boatRepository->remove($boat);
 
         return $this->redirectToRoute('boat_index');

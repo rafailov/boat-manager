@@ -1,15 +1,14 @@
-
 {% block form_row %}
     <div class="form-group">
         {% set type = type|default('text') %}
         <label for="{{ name }}_id">{{ name }}</label>
         <input
-                id="{{ name }}_id"
-                type="{{ type }}"
-                placeholder={{ name }}
-                name={{ name }}
-                {{ block('widget_attributes') }}
-                {% if value is not empty %} value="{{ value }}" {% endif %}
+            id="{{ name }}_id"
+            type="{{ type }}"
+            placeholder={{ name }}
+            name={{ name }}
+            {{ block('widget_attributes') }}
+            {% if value is not empty %} value="{{ value }}" {% endif %}
         />
     </div>
 {% endblock %}

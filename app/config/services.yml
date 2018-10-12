@@ -27,7 +27,7 @@ services:
         arguments:
             - AppBundle\Entity\Boat
 
-    Symfony\Component\Validator\Validator\RecursiveValidator:
+    Symfony\Component\Validator\Validator\TraceableValidator:
         factory: 'Symfony\Component\Validator\Validation::createValidator'
 
     # controllers are imported separately to make sure they're public
