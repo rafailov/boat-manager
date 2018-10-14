@@ -11,6 +11,7 @@
                 <th scope="col">Price</th>
                 <th scope="col">Guests</th>
                 <th scope="col">Length</th>
+                <th scope="col">Active</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -22,6 +23,13 @@
                 <td><i class="fas fa-euro-sign px-2"></i>{{ boat.price }}</td>
                 <td><i class="fas fa-users px-2"></i>{{ boat.guests }}</td>
                 <td><i class="fas fa-arrows-alt-h px-2"></i>{{ boat.length }}m</td>
+                <td>
+                    {% if boat.isActive %}
+                        <i class="fas fa-check px-2"></i>
+                    {% else %}
+                        <i class="fas fa-times px-2"></i>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('boat_show', { 'id': boat.id }) }}"><i class="far fa-newspaper"></i></a>
                     <a href="{{ path('boat_edit', { 'id': boat.id }) }}" class="ml-4"><i class="fas fa-pencil-alt"></i></a>

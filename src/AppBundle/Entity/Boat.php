@@ -136,7 +136,6 @@ class Boat
         $this->bathrooms = $bathrooms;
         $this->length = $length;
         $this->about = $about;
-        $this->isActive = false;
     }
 
     /**
@@ -284,11 +283,12 @@ class Boat
     }
 
     /**
+     * @param $status
      * @return void
      */
-    public function toggleActive(): void
+    public function setIsActive($status): void
     {
-        $this->isActive = !$this->isActive;
+        $this->isActive = $status;
     }
 
     /**

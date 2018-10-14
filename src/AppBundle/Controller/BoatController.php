@@ -49,7 +49,7 @@ class BoatController extends Controller
      */
     public function listAction()
     {
-        $boats = $this->boatRepository->findActiveBoats();
+        $boats = $this->boatRepository->findAll();
 
         return $this->render('boat/index.html.twig', [
             'boats' => $boats,

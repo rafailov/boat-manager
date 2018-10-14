@@ -8,7 +8,7 @@
             {{ form_widget(edit_form) }}
         {{ form_end(edit_form) }}
 
-        {{ form_start(delete_form, {'attr': {'id': 'delete_form', 'method': 'DELETE'} }) }}
+        {{ form_start(delete_form, {'attr': {'id': 'delete_form'} }) }}
         {{ form_end(delete_form) }}
         <div class="row">
             <a href="{{ path('boat_index') }}" class="col-md-3 px-2 my-3 ml-3">
